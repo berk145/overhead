@@ -17,4 +17,4 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - run: semgrep scan --config auto --error --metrics=off
+      - run: semgrep scan --config p/default --error --metrics=off
