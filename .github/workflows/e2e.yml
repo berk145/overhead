@@ -2,11 +2,15 @@ name: E2E
 on:
   schedule:
     - cron: '0 6 * * *'
+permissions:
+  contents: read
 jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22

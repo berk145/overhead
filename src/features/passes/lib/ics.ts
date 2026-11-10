@@ -12,7 +12,7 @@ export const escapeText = (text: string) =>
     .replace(/\\/g, '\\\\')
     .replace(/;/g, '\\;')
     .replace(/,/g, '\\,')
-    .replace(/\r?\n/g, '\\n')
+    .replace(/\r\n|\n|\r/g, '\\n')
 export function foldLine(line: string) {
   const out: string[] = []
   let current = ''

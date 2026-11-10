@@ -28,11 +28,11 @@ it('exports events with stable IDs and ten-minute alarms', () => {
       },
     ],
     satelliteName: 'ISS',
-    locationLabel: 'Amsterdam, Netherlands',
+    locationLabel: 'Amsterdam, Netherlands\rInjected: value',
     nowMs: 0,
   })
   expect(ics).toContain('UID:25544-1794292182000@overhead.app')
   expect(ics).toContain('TRIGGER:-PT10M')
-  expect(ics).toContain('LOCATION:Amsterdam\\, Netherlands')
+  expect(ics).toContain('LOCATION:Amsterdam\\, Netherlands\\nInjected: value\r\n')
   expect(ics.endsWith('END:VCALENDAR\r\n')).toBe(true)
 })
