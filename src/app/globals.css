@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme static {
+  /* Typography */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text-2xs: 0.6875rem; --text-2xs--line-height: 0.875rem;
+  --text-xs: 0.75rem; --text-xs--line-height: 1rem;
+  --text-md: 0.8125rem; --text-md--line-height: 1.125rem;
+  --text-sm: 0.875rem; --text-sm--line-height: 1.25rem;
+  --text-base: 1rem; --text-base--line-height: 1.375rem;
+  --text-xl: 1.25rem; --text-xl--line-height: 1.625rem;
+  --text-3xl: 1.75rem; --text-3xl--line-height: 2rem;
+  --text-4xl: 2.25rem; --text-4xl--line-height: 2.5rem;
+  --tracking-caps: 0.08em;
+
+  /* Spacing: Tailwind default 4px scale is kept. Named layout sizes: */
+  --spacing-gutter: 1.5rem;     /* page edge */
+  --spacing-panel: 1rem;        /* inside a card */
+  --spacing-sidebar: 18rem;     /* 288px left rail */
+  --spacing-rail: 3.5rem;       /* 56px icon rail */
+  --spacing-header: 3.5rem;     /* 56px top bar */
+
+  /* Radii */
+  --radius-sm: 0.375rem;  /* chips, kbd */
+  --radius-md: 0.5rem;    /* buttons, inputs */
+  --radius-lg: 0.75rem;   /* cards, panels */
+  --radius-xl: 1rem;      /* floating panels over maps */
+  --radius-full: 9999px;
+
+  /* Shadows (used only on floating panels and popovers) */
+  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 24px rgb(0 0 0 / 0.08);
+  --shadow-popover: 0 4px 6px rgb(0 0 0 / 0.08), 0 12px 32px rgb(0 0 0 / 0.16);
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  /* Neutral scale (OKLCH, hue 255, L 0.99/0.982/0.965/0.93/0.875/0.71/0.55/0.47/0.4/0.31/0.23/0.17) */
+  --color-gray-25: #fbfcfd; --color-gray-50: #f8f9fb; --color-gray-100: #f2f4f6;
+  --color-gray-200: #e5e8ec; --color-gray-300: #d2d6db; --color-gray-400: #9da2a9;
+  --color-gray-500: #6c727a; --color-gray-600: #555b64; --color-gray-700: #414851;
+  --color-gray-800: #2a313a; --color-gray-900: #161d27; --color-gray-950: #08101a;
+
+  /* Brand scale: REPLACE per app (see 3.3). Shown: Overhead (sky).
+     50-500 = pastel fill band (dark text on it), 600-900 = text band (4.5:1+ on white). */
+  --color-brand-50: #eff9ff; --color-brand-100: #def2fe; --color-brand-200: #c7e9fd;
+  --color-brand-300: #a9dcfb; --color-brand-400: #8ecdf2; --color-brand-500: #76bbe2;
+  --color-brand-600: #39799c; --color-brand-700: #265e7d; --color-brand-800: #194860;
+  --color-brand-900: #0e3244;
+
+  /* Status scales (same ladder; 50 fill, 500 pastel fill, 600 text on light, 700 badge text) */
+  --color-success-50: #f0faf0; --color-success-500: #84c485; --color-success-600: #47814a; --color-success-700: #336536;
+  --color-warning-50: #fff5e9; --color-warning-500: #e1a447; --color-warning-600: #996600; --color-warning-700: #774f00;
+  --color-error-50: #fff4f3; --color-error-500: #f4928a; --color-error-600: #aa544f; --color-error-700: #883e3a;
+  --color-info-50: #f1f8ff; --color-info-500: #7fb6ee; --color-info-600: #4375a7; --color-info-700: #305b86;
+
+  /* Semantic tokens: light values. Dark values are set below. */
+  --color-bg: var(--color-gray-25);            /* page */
+  --color-bg-subtle: var(--color-gray-50);     /* sidebar, table header */
+  --color-surface: #ffffff;                    /* cards */
+  --color-surface-2: var(--color-gray-100);
+  --color-surface-hover: var(--color-gray-100);     /* nested cards, code */
+  --color-surface-overlay: rgb(255 255 255 / 0.85); /* floating panels over maps */
+  --color-fg: var(--color-gray-900);
+  --color-fg-muted: var(--color-gray-600);
+  --color-fg-subtle: var(--color-gray-500);
+  --color-border: var(--color-gray-200);
+  --color-border-strong: var(--color-gray-300);
+  --color-ring: var(--color-brand-600);        /* 600 so the ring clears 3:1 on white; 500 does not */
+  --color-accent: var(--color-brand-500);      /* pastel fill: primary button, selected state */
+  --color-accent-fg: var(--color-gray-950);    /* dark text on the pastel fill (Radix step 9 for Sky/Amber, Material tone 80 + on-tone 20) */
+  --color-accent-soft: var(--color-brand-100);
+  /* Accent-coloured text and icons: use brand-600 (light) and brand-300 (dark) directly, never brand-500. */
+
+  /* Chart palette (categorical, 8). Same hues both themes; lightness and chroma adjusted in dark. */
+  --color-chart-1: #599fd8; --color-chart-2: #d78951; --color-chart-3: #4bae87; --color-chart-4: #c673a3;
+  --color-chart-5: #7966ae; --color-chart-6: #e3ca69; --color-chart-7: #c25d58; --color-chart-8: #5dcbd1;
+  --color-chart-grid: var(--color-gray-200);
+  --color-chart-axis: var(--color-gray-500);
+  /* Sequential ramp endpoints (interpolate in OKLCH in JS, see 3.5) */
+  --color-seq-low: #e7f6ff;  --color-seq-high: #003755;
+  /* Diverging ramp (cold - neutral - hot) */
+  --color-div-low: #286cab;  --color-div-mid: var(--color-gray-200); --color-div-high: #b54a46;
+}
+
+[data-theme="dark"] {
+  --color-bg: var(--color-gray-950);
+  --color-bg-subtle: #0f1720;
+  --color-surface: var(--color-gray-900);
+  --color-surface-2: #1b2430;
+  --color-surface-hover: var(--color-gray-800);
+  --color-surface-overlay: rgb(22 29 39 / 0.82);
+  --color-fg: var(--color-gray-50);
+  --color-fg-muted: var(--color-gray-300);
+  --color-fg-subtle: var(--color-gray-400);
+  --color-border: rgb(255 255 255 / 0.08);
+  --color-border-strong: rgb(255 255 255 / 0.14);
+  --color-ring: var(--color-brand-300);
+  --color-accent: var(--color-brand-300);      /* lighter, lower-chroma pastel so it does not glow on dark */
+  --color-accent-fg: var(--color-gray-950);
+  --color-accent-soft: rgb(from var(--color-brand-400) r g b / 0.18);
+  --color-chart-grid: rgb(255 255 255 / 0.06);
+  --color-chart-axis: var(--color-gray-400);
+  --color-chart-1: #86c5fa; --color-chart-2: #cf8d60; --color-chart-3: #5cb28f; --color-chart-4: #ffc3e4;
+  --color-chart-5: #a392d6; --color-chart-6: #f3de90; --color-chart-7: #ffd1cd; --color-chart-8: #50afb4;
+  --color-seq-low: #0b2230;  --color-seq-high: #9be4fc;
+  --color-div-low: #79b0e8;  --color-div-mid: var(--color-gray-700); --color-div-high: #f4928a;
+}
+
+html, body { background: var(--color-bg); color: var(--color-fg); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+@theme static {
+  --color-group-stations: var(--color-chart-1); --color-group-visual: var(--color-chart-2);
+  --color-group-starlink: var(--color-chart-8); --color-group-gps: var(--color-chart-3); --color-group-active: var(--color-gray-400);
+  --color-orbit-selected: var(--color-brand-400); --color-orbit-past: rgb(from var(--color-brand-400) r g b / 0.35);
+  --color-observer: var(--color-chart-2); --color-footprint: rgb(from var(--color-brand-400) r g b / 0.25);
+  --color-night: rgb(0 0 0 / 0.18); --color-el-low: var(--color-gray-500); --color-el-mid: var(--color-brand-600); --color-el-high: var(--color-success-700);
+  --color-globe-bg: var(--color-gray-100); --color-globe-atmosphere: var(--color-brand-400);
+}
+[data-theme="dark"] { --color-el-low: var(--color-gray-400); --color-el-mid: var(--color-brand-300); --color-el-high: var(--color-success-500); --color-group-active: var(--color-gray-300); --color-globe-bg: #02050b; --color-night: rgb(0 0 0 / 0.38); }
+:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+
+html, body { font-variant-numeric: tabular-nums; }
+[data-theme="dark"] body { font-weight: 450; }
+@utility label-caps { font-size: var(--text-2xs); line-height: var(--text-2xs--line-height); font-weight: 600; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--color-fg-subtle); }
+@utility stat-value { font-size: var(--text-3xl); line-height: var(--text-3xl--line-height); font-weight: 600; letter-spacing: -0.02em; }

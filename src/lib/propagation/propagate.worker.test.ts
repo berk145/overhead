@@ -1,0 +1,37 @@
+import { afterEach, expect, it, vi } from 'vitest'
+import stations from '@/test/fixtures/gp-stations.json'
+import type { OmmRecordLike, WorkerRequest, WorkerResponse } from './types'
+afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks() })
+it('deduplicates the roster and posts aligned transferable positions', async () => {
+  vi.useFakeTimers()
+  vi.setSystemTime(1794241823000)
+  const post = vi.spyOn(self, 'postMessage').mockImplementation(() => {})
+  await import('./propagate.worker')
+  vi.spyOn(performance, 'now').mockReturnValueOnce(0).mockReturnValueOnce(801)
+  const iss = stations.find((r) => r.NORAD_CAT_ID === 25544) as OmmRecordLike | undefined
+  if (!iss) throw new Error('ISS fixture missing')
+  const send = (data: WorkerRequest) => self.onmessage?.(new MessageEvent('message', { data }))
+  send({ type: 'load', group: 'stations', records: [iss, { ...iss, NORAD_CAT_ID: 999, EPOCH: 'invalid' }] })
+  send({ type: 'load', group: 'visual', records: [iss] })
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(post.mock.calls.filter((call) => (call[0] as WorkerResponse).type === 'positions')).toHaveLength(1)
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(post.mock.calls.filter((call) => (call[0] as WorkerResponse).type === 'positions')).toHaveLength(2)
+  const messages = post.mock.calls.map((call) => call[0] as WorkerResponse)
+  const loaded = messages.find((m) => m.type === 'loaded' && m.group === 'stations')
+  expect(loaded).toMatchObject({ count: 1, rejectedIds: [999] })
+  const roster = messages.filter((m) => m.type === 'roster').at(-1)
+  expect(roster?.type === 'roster' && [...roster.ids]).toEqual([25544])
+  expect(roster?.type === 'roster' && [...roster.groupIndex]).toEqual([0])
+  const position = messages.filter((m) => m.type === 'positions').at(-1)
+  expect(position?.type === 'positions' && position.latLngAlt.length).toBe(3)
+  expect(position?.type === 'positions' && position.latLngAlt[0]).toBeCloseTo(14.97, 1)
+  send({ type: 'load', group: 'stations', records: [{ ...iss, NORAD_CAT_ID: 1001, MEAN_MOTION: 6.4 }, { ...iss, NORAD_CAT_ID: 1002, MEAN_MOTION: 6.3999 }] })
+  const prediction = { type: 'predictPasses', observer: { lat: 52.37, lon: 4.9, altM: 3 }, startMs: Date.parse(iss.EPOCH), days: 0, minElevationDeg: 0 } as const
+  send({ ...prediction, requestId: 1, noradId: 1001 })
+  send({ ...prediction, requestId: 2, noradId: 1002 })
+  const predictions = post.mock.calls.map((call) => call[0] as WorkerResponse).filter((m) => m.type === 'passes')
+  expect(predictions).toEqual([expect.objectContaining({ requestId: 1, error: undefined }), expect.objectContaining({ requestId: 2, error: 'not-leo' })])
+  send({ type: 'unload', group: 'stations' })
+  send({ type: 'unload', group: 'visual' })
+})
